@@ -4,7 +4,15 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import org.carlmontrobotics.lib199.swerve.SwerveModule.ModuleType;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -12,10 +20,27 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private double ackNum = 0;
+
+  private static SendableChooser<ModuleType> m_chooser = new SendableChooser<>();
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    setTelemetry("");
+    ackNum = SmartDashboard.getNumber("SysIdAckNumber", 0); // Input
+    SmartDashboard.putNumber("SysIdVoltageCommand", 0.0); // Input
+    SmartDashboard.putString("SysIdTestType", ""); // Input
+    SmartDashboard.putString("SysIdTest", ""); // Input
+    SmartDashboard.putBoolean("SysIdRotate", false); // Input
+    SmartDashboard.putBoolean("SysIdOverflow", false); // Output
+    SmartDashboard.putBoolean("SysIdWrongMech", false); // Output
+
+    for(ModuleType type: ModuleType.values()) m_chooser.addOption(type.toString(), type);
+
+    SmartDashboard.putData("Module Type", m_chooser);
+    SmartDashboard.putBoolean("Drive", false);
+    SmartDashboard.putNumber("Direction", 0);
   }
 
   @Override
@@ -27,7 +52,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    clearWhenReceived();
+  }
 
   @Override
   public void disabledExit() {}
@@ -70,4 +97,81 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
+
+  public void clearWhenReceived() {
+    if(SmartDashboard.getNumber("SysIdAckNumber", 0) > ackNum) {
+      setTelemetry("");
+      ackNum = SmartDashboard.getNumber("SysIdAckNumber", 0);
+    }
+
+  }
+
+  public static void setTelemetry(ArrayList<double[]> data) {
+    StringBuilder builder = new StringBuilder();
+    builder.append(getTestType() == TestType.DYNAMIC ? "fast" : "slow");
+    builder.append("-");
+    builder.append(getVoltageCommand() > 0 ? "forward" : "backward");
+    builder.append(";[");
+    builder.append(data.stream().map(Arrays::stream).map(dataPoint -> new String("[" + dataPoint.mapToObj(Double::toString).collect(Collectors.joining(",")) + "]")).collect(Collectors.joining(",")));
+    builder.append("]");
+    setTelemetry(builder.toString());
+  }
+
+  public static void setTelemetry(String telemetry) {
+    SmartDashboard.putString("SysIdTelemetry", telemetry);
+  }
+
+  public static TestType getTestType() {
+    String requestedType = SmartDashboard.getString("SysIdTestType", null).toLowerCase();
+    for(TestType type : TestType.values()) {
+      if(type.name().toLowerCase().equals(requestedType)) {
+        return type;
+      }
+    }
+    System.err.println("Invalid test type requested: " + requestedType);
+    return null;
+  }
+
+  public static double getVoltageCommand() {
+    return SmartDashboard.getNumber("SysIdVoltageCommand", 0);
+  }
+
+  public static boolean getRotate() {
+    return SmartDashboard.getBoolean("SysIdRotate", false);
+  }
+
+  public static void setOverflow(boolean overflow) {
+    SmartDashboard.putBoolean("SysIdOverflow", overflow);
+  }
+
+  public static void setWrongMech(boolean wrongMech) {
+    SmartDashboard.putBoolean("SysIdWrongMech", wrongMech);
+  }
+
+  public static AnalysisType getAnalysisType() {
+    String requestedType = SmartDashboard.getString("SysIdTest", null).toLowerCase();
+    if(requestedType == "Drivetrain (Angular)".toLowerCase()) {
+      return AnalysisType.DRIVETRAIN_ANGULAR;
+    }
+    for(AnalysisType type : AnalysisType.values()) {
+      if(type.name().toLowerCase().equals(requestedType)) {
+        return type;
+      }
+    }
+    System.err.println("Invalid analysis type requested: " + requestedType);
+    return null;
+  }
+
+  public static ModuleType getModuleType() {
+    return m_chooser.getSelected();
+  }
+
+  public static boolean getDrive() {
+    return SmartDashboard.getBoolean("Drive", false);
+  }
+
+  public static double getDirection() {
+    return SmartDashboard.getNumber("Direction", 0);
+  }
+
 }
