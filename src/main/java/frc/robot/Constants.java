@@ -16,30 +16,30 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
-    public static final int flDrivePort = 1;
-    public static final int frDrivePort = 2;
-    public static final int blDrivePort = 3;
-    public static final int brDrivePort = 4;
-    public static final int flTurnPort = 5;
-    public static final int frTurnPort = 6;
-    public static final int blTurnPort = 7;
-    public static final int brTurnPort = 8;
+    public static final int flDrivePort = 8;
+    public static final int frDrivePort = 13;
+    public static final int blDrivePort = 5;
+    public static final int brDrivePort = 11;
+    public static final int flTurnPort = 7;
+    public static final int frTurnPort = 14;
+    public static final int blTurnPort = 6;
+    public static final int brTurnPort = 12;
 
     public static final boolean[] driveInversion = {false, false, false, false};
-    public static final boolean[] turnInversion = {false, false, false, false};
+    public static final boolean[] turnInversion = {true, true, true, true};
 
     public static final int flEncoderPort = 1;
     public static final int frEncoderPort = 2;
     public static final int blEncoderPort = 3;
     public static final int brEncoderPort = 4;
 
-    public static final double[] turnZero = {0, 0, 0, 0};
+    public static final double[] turnZero = {85.7812, 85.0782 , -96.9433, -162.9492};
 
-    public static final double driveGearing = 1;
+    public static final double driveGearing = 6.75;
     public static final double turnGearing = 1;
-    public static final double wheelDiameterMeters = Units.inchesToMeters(4);
+    public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65;
 
-    public static final double turnKp = 0.07;
+    public static final double turnKp = 0.00374;
     public static final double turnTolerance = 3 / 4096;
 
 }
