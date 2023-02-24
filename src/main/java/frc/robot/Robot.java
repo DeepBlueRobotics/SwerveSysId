@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
   }
 
   @Override
@@ -108,12 +109,20 @@ public class Robot extends TimedRobot {
 
   public static void setTelemetry(ArrayList<double[]> data) {
     StringBuilder builder = new StringBuilder();
+    builder.append("{\"");
     builder.append(getTestType() == TestType.DYNAMIC ? "fast" : "slow");
     builder.append("-");
     builder.append(getVoltageCommand() > 0 ? "forward" : "backward");
-    builder.append(";[");
+    builder.append("\":[");
     builder.append(data.stream().map(Arrays::stream).map(dataPoint -> new String("[" + dataPoint.mapToObj(Double::toString).collect(Collectors.joining(",")) + "]")).collect(Collectors.joining(",")));
-    builder.append("]");
+    builder.append("],");
+    builder.append("\"sysid\": true,");
+    builder.append("\"test\": \"General\",");
+    builder.append("\"units\": \"");
+    builder.append(getDrive() ? "Meters" : "Degrees");
+    builder.append("\",\"unitsPerRotation\": ");
+    builder.append(getDrive() ? "1" : "360");
+    builder.append("}");
     setTelemetry(builder.toString());
   }
 

@@ -67,7 +67,7 @@ public class Drivetrain extends SubsystemBase {
         }
 
         for(CANSparkMax motor : turnMotors) {
-            motor.getEncoder().setPositionConversionFactor(Constants.turnGearing * 2 * Math.PI);
+            motor.getEncoder().setPositionConversionFactor(Constants.turnGearing * 360);
             motor.getEncoder().setVelocityConversionFactor(Constants.turnGearing * 360 / 60);
         }
 

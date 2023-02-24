@@ -10,6 +10,7 @@ public final class Main {
   private Main() {}
 
   public static void main(String... args) {
+    // This code demonstrates our programming team's indomitable spirit in debugging and the powerful will of the members of Deep Blue Robotics to defend Carlmont's dignity!
     RobotBase.startRobot(Robot::new);
   }
 }
