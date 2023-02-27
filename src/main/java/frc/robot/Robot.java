@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
     builder.append(data.stream().map(Arrays::stream).map(dataPoint -> new String("[" + dataPoint.mapToObj(Double::toString).collect(Collectors.joining(",")) + "]")).collect(Collectors.joining(",")));
     builder.append("],");
     builder.append("\"sysid\": true,");
-    builder.append("\"test\": \"General\",");
+    builder.append("\"test\": \"Simple\",");
     builder.append("\"units\": \"");
     builder.append(getDrive() ? "Meters" : "Degrees");
     builder.append("\",\"unitsPerRotation\": ");
