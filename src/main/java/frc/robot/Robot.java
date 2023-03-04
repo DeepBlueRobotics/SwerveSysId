@@ -104,11 +104,14 @@ public class Robot extends TimedRobot {
       setTelemetry("");
       ackNum = SmartDashboard.getNumber("SysIdAckNumber", 0);
     }
-
   }
 
   public static void setTelemetry(ArrayList<double[]> data) {
     StringBuilder builder = new StringBuilder();
+    builder.append(getTestType() == TestType.DYNAMIC ? "fast" : "slow");
+    builder.append("-");
+    builder.append(getVoltageCommand() > 0 ? "forward" : "backward");
+    builder.append(";");
     builder.append("{\"");
     builder.append(getTestType() == TestType.DYNAMIC ? "fast" : "slow");
     builder.append("-");

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.carlmontrobotics.lib199.swerve.SwerveModule.ModuleType;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.TestType;
@@ -45,6 +46,7 @@ public class LogData extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        SmartDashboard.putNumber("SysIdAckNumber", SmartDashboard.getNumber("SysIdAckNumber", 0) + 1);
         Robot.setTelemetry(data);
     }
 
