@@ -16,24 +16,24 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
-    public static final int flDrivePort = 8;
-    public static final int frDrivePort = 13;
-    public static final int blDrivePort = 5;
-    public static final int brDrivePort = 11;
-    public static final int flTurnPort = 7;
-    public static final int frTurnPort = 14;
-    public static final int blTurnPort = 6;
-    public static final int brTurnPort = 12;
+    public static final int flDrivePort = 1; // 1
+    public static final int frDrivePort = 16; // 16
+    public static final int blDrivePort = 3;  // 3
+    public static final int brDrivePort = 14;  // 14
+    public static final int flTurnPort = 2;  // 2
+    public static final int frTurnPort = 15;  // 15
+    public static final int blTurnPort = 4;   // 4
+    public static final int brTurnPort = 13;   // 13
 
-    public static final boolean[] driveInversion = {false, false, false, false};
-    public static final boolean[] turnInversion = {true, true, true, true};
+    public static final boolean[] driveInversion = {true, true, true, true};
+    public static final boolean[] turnInversion = {false, false, false, false};
 
     public static final int flEncoderPort = 1;
     public static final int frEncoderPort = 2;
     public static final int blEncoderPort = 3;
     public static final int brEncoderPort = 4;
 
-    public static final double[] turnZero = {85.7812, 85.0782 , -96.9433, -162.9492};
+    public static final double[] turnZero = {135.616, -7.822, 25.137, -39.199};
 
     public static final double driveGearing = 6.75;
     public static final double turnGearing = 1;
