@@ -20,8 +20,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private double ackNum = 0;
 
+  private static double ackNum = 0;
   private static SendableChooser<ModuleType> m_chooser = new SendableChooser<>();
 
   @Override
@@ -104,26 +104,18 @@ public class Robot extends TimedRobot {
       setTelemetry("");
       ackNum = SmartDashboard.getNumber("SysIdAckNumber", 0);
     }
-
   }
 
   public static void setTelemetry(ArrayList<double[]> data) {
     StringBuilder builder = new StringBuilder();
-    builder.append("{\"");
     builder.append(getTestType() == TestType.DYNAMIC ? "fast" : "slow");
     builder.append("-");
     builder.append(getVoltageCommand() > 0 ? "forward" : "backward");
-    builder.append("\":[");
-    builder.append(data.stream().map(Arrays::stream).map(dataPoint -> new String("[" + dataPoint.mapToObj(Double::toString).collect(Collectors.joining(",")) + "]")).collect(Collectors.joining(",")));
-    builder.append("],");
-    builder.append("\"sysid\": true,");
-    builder.append("\"test\": \"Simple\",");
-    builder.append("\"units\": \"");
-    builder.append(getDrive() ? "Meters" : "Degrees");
-    builder.append("\",\"unitsPerRotation\": ");
-    builder.append(getDrive() ? "1" : "360");
-    builder.append("}");
+    builder.append(";");
+    builder.append(data.stream().flatMapToDouble(Arrays::stream).mapToObj(Double::toString).collect(Collectors.joining(",")));
     setTelemetry(builder.toString());
+    ackNum = SmartDashboard.getNumber("SysIdAckNumber", 0);
+    SmartDashboard.putNumber("SysIdAckNumber", ++ackNum);
   }
 
   public static void setTelemetry(String telemetry) {
