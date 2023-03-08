@@ -35,8 +35,8 @@ public final class Constants {
 
     public static final double[] turnZero = {135.616, -7.822, 25.137, -39.199};
 
-    public static final double driveGearing = 6.75;
-    public static final double turnGearing = 1;
+    public static final double driveGearing = 6.86;
+    public static final double turnGearing = 12.8;
     public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65;
 
     public static final double turnKp = 0.00374;

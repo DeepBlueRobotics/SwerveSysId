@@ -9,6 +9,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -59,7 +60,7 @@ public class Drivetrain extends SubsystemBase {
         turnMotors = new CANSparkMax[] {flTurn, frTurn, blTurn, brTurn};
         encoders = new CANCoder[] {flEncoder, frEncoder, blEncoder, brEncoder};
 
-        double positionFactor = Constants.wheelDiameterMeters * Math.PI / Constants.driveGearing;
+        double positionFactor = Constants.driveGearing;
 
         for(CANSparkMax motor : driveMotors) {
             motor.getEncoder().setPositionConversionFactor(positionFactor);
@@ -67,8 +68,8 @@ public class Drivetrain extends SubsystemBase {
         }
 
         for(CANSparkMax motor : turnMotors) {
-            motor.getEncoder().setPositionConversionFactor(Constants.turnGearing * 360);
-            motor.getEncoder().setVelocityConversionFactor(Constants.turnGearing * 360 / 60);
+            motor.getEncoder().setPositionConversionFactor(1 / Constants.turnGearing);
+            motor.getEncoder().setVelocityConversionFactor(1 / Constants.turnGearing / 60);
         }
 
         for(CANCoder encoder : encoders) encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
@@ -77,6 +78,11 @@ public class Drivetrain extends SubsystemBase {
             controller.setTolerance(Constants.turnTolerance);
             controller.enableContinuousInput(-180, 180);
         }
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("encoderalsjf.ajsdf", frTurn.getEncoder().getPosition());
     }
 
     public void driveTurnMotor(ModuleType module, double voltage) {
@@ -104,6 +110,7 @@ public class Drivetrain extends SubsystemBase {
     public void resetEncoders() {
         for(CANSparkMax motor : driveMotors) motor.getEncoder().setPosition(0);
         for(CANSparkMax motor : turnMotors) motor.getEncoder().setPosition(0);
+        for(CANCoder encoder : encoders) encoder.setPosition(0);
     }
 
     public boolean getTurnLock() {
@@ -111,11 +118,11 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getEncoderPosition(ModuleType module, boolean drive) {
-        return drive ? driveMotors[module.ordinal()].getEncoder().getPosition() : turnMotors[module.ordinal()].getEncoder().getPosition();
+        return drive ? driveMotors[module.ordinal()].getEncoder().getPosition() : encoders[module.ordinal()].getPosition();
     }
 
     public double getEncoderVelocity(ModuleType module, boolean drive) {
-        return drive ? driveMotors[module.ordinal()].getEncoder().getVelocity() : turnMotors[module.ordinal()].getEncoder().getVelocity();
+        return drive ? driveMotors[module.ordinal()].getEncoder().getVelocity() : encoders[module.ordinal()].getVelocity();
     }
 
     public double getMotorVoltage(ModuleType module, boolean drive) {
