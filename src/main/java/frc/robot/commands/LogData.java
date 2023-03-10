@@ -24,7 +24,7 @@ public class LogData extends CommandBase {
     @Override
     public void initialize() {
         data.clear();
-        drivetrain.resetEncoders();
+        // drivetrain.resetEncoders();
         drivetrain.resetTurnLock();
         startTime = Timer.getFPGATimestamp();
     }
@@ -41,6 +41,7 @@ public class LogData extends CommandBase {
             drivetrain.driveRobot(voltage, Robot.getDirection());
         } else {
             drivetrain.driveTurnMotor(module, voltage);
+            SmartDashboard.putNumber("encoderalsjf.ajsdf", drivetrain.turnEncoders[module.ordinal()].getPosition());
         }
     }
 

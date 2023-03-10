@@ -7,6 +7,7 @@ import org.carlmontrobotics.lib199.swerve.SwerveModule.ModuleType;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +20,8 @@ public class Drivetrain extends SubsystemBase {
     private final CANCoder flEncoder, frEncoder, blEncoder, brEncoder;
 
     private final CANSparkMax[] driveMotors, turnMotors;
-    private final CANCoder[] encoders;
+    private final CANCoder[] absoluteEncoders;
+    public final RelativeEncoder[] turnEncoders;
 
     private final PIDController[] turnControllers = {
         new PIDController(Constants.turnKp, 0, 0),
@@ -58,7 +60,8 @@ public class Drivetrain extends SubsystemBase {
 
         driveMotors = new CANSparkMax[] {flDrive, frDrive, blDrive, brDrive};
         turnMotors = new CANSparkMax[] {flTurn, frTurn, blTurn, brTurn};
-        encoders = new CANCoder[] {flEncoder, frEncoder, blEncoder, brEncoder};
+        absoluteEncoders = new CANCoder[] {flEncoder, frEncoder, blEncoder, brEncoder};
+        turnEncoders = new RelativeEncoder[] {flTurn.getEncoder(), frTurn.getEncoder(), blTurn.getEncoder(), brTurn.getEncoder()};
 
         double positionFactor = Constants.driveGearing;
 
@@ -72,7 +75,7 @@ public class Drivetrain extends SubsystemBase {
             motor.getEncoder().setVelocityConversionFactor(1 / Constants.turnGearing / 60);
         }
 
-        for(CANCoder encoder : encoders) encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        for(CANCoder encoder : absoluteEncoders) encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
         for(PIDController controller : turnControllers) {
             controller.setTolerance(Constants.turnTolerance);
@@ -82,7 +85,7 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("encoderalsjf.ajsdf", frTurn.getEncoder().getPosition());
+        
     }
 
     public void driveTurnMotor(ModuleType module, double voltage) {
@@ -95,7 +98,7 @@ public class Drivetrain extends SubsystemBase {
         boolean turnReady = true;
         for(int i = 0; i < turnMotors.length; i++) {
             double target = direction + Constants.turnZero[i];
-            double turnVoltage = turnControllers[i].calculate(encoders[i].getAbsolutePosition(), target);
+            double turnVoltage = turnControllers[i].calculate(absoluteEncoders[i].getAbsolutePosition(), target);
             if(target > Constants.turnTolerance) turnReady = false;
             turnMotors[i].setVoltage(turnVoltage);
         }
@@ -110,7 +113,7 @@ public class Drivetrain extends SubsystemBase {
     public void resetEncoders() {
         for(CANSparkMax motor : driveMotors) motor.getEncoder().setPosition(0);
         for(CANSparkMax motor : turnMotors) motor.getEncoder().setPosition(0);
-        for(CANCoder encoder : encoders) encoder.setPosition(0);
+        for(CANCoder encoder : absoluteEncoders) encoder.setPosition(0);
     }
 
     public boolean getTurnLock() {
@@ -118,11 +121,11 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getEncoderPosition(ModuleType module, boolean drive) {
-        return drive ? driveMotors[module.ordinal()].getEncoder().getPosition() : encoders[module.ordinal()].getPosition();
+        return drive ? driveMotors[module.ordinal()].getEncoder().getPosition() : turnEncoders[module.ordinal()].getPosition();
     }
 
     public double getEncoderVelocity(ModuleType module, boolean drive) {
-        return drive ? driveMotors[module.ordinal()].getEncoder().getVelocity() : encoders[module.ordinal()].getVelocity();
+        return drive ? driveMotors[module.ordinal()].getEncoder().getVelocity() : turnEncoders[module.ordinal()].getVelocity();
     }
 
     public double getMotorVoltage(ModuleType module, boolean drive) {
