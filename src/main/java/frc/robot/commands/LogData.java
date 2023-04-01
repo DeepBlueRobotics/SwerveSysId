@@ -32,9 +32,9 @@ public class LogData extends CommandBase {
     @Override
     public void execute() {
         boolean drive = Robot.getDrive();
-        if(drive && drivetrain.getTurnLock()) startTime = Timer.getFPGATimestamp();
         ModuleType module = Robot.getModuleType();
-        data.add(new double[] {Timer.getFPGATimestamp(), drivetrain.getMotorVoltage(module, drive), drivetrain.getEncoderPosition(module, drive), drivetrain.getEncoderVelocity(module, drive)});
+        if(drive && drivetrain.getTurnLock()) startTime = Timer.getFPGATimestamp();
+        else data.add(new double[] {Timer.getFPGATimestamp(), drivetrain.getMotorVoltage(module, drive), drivetrain.getEncoderPosition(module, drive), drivetrain.getEncoderVelocity(module, drive)});
         double voltage = Robot.getVoltageCommand();
         if(Robot.getTestType() == TestType.QUASISTATIC) voltage *= Timer.getFPGATimestamp() - startTime;
         if(Robot.getDrive()) {

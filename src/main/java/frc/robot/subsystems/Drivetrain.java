@@ -1,16 +1,21 @@
 package frc.robot.subsystems;
 
 import org.carlmontrobotics.lib199.MotorControllerFactory;
+import org.carlmontrobotics.lib199.MotorErrors;
 import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
+import org.carlmontrobotics.lib199.swerve.SwerveModule;
 import org.carlmontrobotics.lib199.swerve.SwerveModule.ModuleType;
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -19,6 +24,7 @@ public class Drivetrain extends SubsystemBase {
 
     private final CANSparkMax[] driveMotors, turnMotors;
     private final CANCoder[] encoders;
+    private final SwerveModule[] modules; // Just used for turning
 
     private final PIDController[] turnControllers = {
         new PIDController(Constants.turnKp, 0, 0),
@@ -27,18 +33,20 @@ public class Drivetrain extends SubsystemBase {
         new PIDController(Constants.turnKp, 0, 0)
     };
 
+    private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(Constants.turnKs, Constants.turnKv, 0);
+
     private boolean turnLock = false;
 
     public Drivetrain() {
-        flDrive = MotorControllerFactory.createSparkMax(Constants.flDrivePort, TemperatureLimit.NEO);
-        frDrive = MotorControllerFactory.createSparkMax(Constants.frDrivePort, TemperatureLimit.NEO);
-        blDrive = MotorControllerFactory.createSparkMax(Constants.blDrivePort, TemperatureLimit.NEO);
-        brDrive = MotorControllerFactory.createSparkMax(Constants.brDrivePort, TemperatureLimit.NEO);
+        flDrive = MotorControllerFactory.createSparkMax(Constants.driveFrontLeftPort, TemperatureLimit.NEO);
+        frDrive = MotorControllerFactory.createSparkMax(Constants.driveFrontRightPort, TemperatureLimit.NEO);
+        blDrive = MotorControllerFactory.createSparkMax(Constants.driveBackLeftPort, TemperatureLimit.NEO);
+        brDrive = MotorControllerFactory.createSparkMax(Constants.driveBackRightPort, TemperatureLimit.NEO);
 
-        flTurn = MotorControllerFactory.createSparkMax(Constants.flTurnPort, TemperatureLimit.NEO);
-        frTurn = MotorControllerFactory.createSparkMax(Constants.frTurnPort, TemperatureLimit.NEO);
-        blTurn = MotorControllerFactory.createSparkMax(Constants.blTurnPort, TemperatureLimit.NEO);
-        brTurn = MotorControllerFactory.createSparkMax(Constants.brTurnPort, TemperatureLimit.NEO);
+        flTurn = MotorControllerFactory.createSparkMax(Constants.turnFrontLeftPort, TemperatureLimit.NEO);
+        frTurn = MotorControllerFactory.createSparkMax(Constants.turnFrontRightPort, TemperatureLimit.NEO);
+        blTurn = MotorControllerFactory.createSparkMax(Constants.turnBackLeftPort, TemperatureLimit.NEO);
+        brTurn = MotorControllerFactory.createSparkMax(Constants.turnBackRightPort, TemperatureLimit.NEO);
 
         flDrive.setInverted(Constants.driveInversion[0]);
         frDrive.setInverted(Constants.driveInversion[1]);
@@ -77,6 +85,15 @@ public class Drivetrain extends SubsystemBase {
             controller.setTolerance(Constants.turnTolerance);
             controller.enableContinuousInput(-180, 180);
         }
+
+        modules = new SwerveModule[turnMotors.length];
+        for(int i = 0; i < modules.length; i++) {
+            modules[i] = new SwerveModule(Constants.swerveConfig, ModuleType.values()[i],
+                MotorErrors.createDummySparkMax(),
+                turnMotors[i],
+                encoders[i], i,
+                () -> 0f, () -> 0f);
+        }
     }
 
     public void driveTurnMotor(ModuleType module, double voltage) {
@@ -89,9 +106,11 @@ public class Drivetrain extends SubsystemBase {
         boolean turnReady = true;
         for(int i = 0; i < turnMotors.length; i++) {
             double target = direction + Constants.turnZero[i];
-            double turnVoltage = turnControllers[i].calculate(encoders[i].getAbsolutePosition(), target);
-            if(target > Constants.turnTolerance) turnReady = false;
-            turnMotors[i].setVoltage(turnVoltage);
+            modules[i].move(0.000001, direction);
+            if(MathUtil.inputModulus(target - encoders[i].getAbsolutePosition(), -180, 180) > Constants.turnTolerance) {
+                turnReady = false;
+            }
+            modules[i].periodic();
         }
         turnLock |= turnReady;
         if(turnLock) for(CANSparkMax motor : driveMotors) motor.set(voltage);

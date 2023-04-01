@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
+
+  public static Robot robot;
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -26,6 +29,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    robot = this;
     m_robotContainer = new RobotContainer();
     setTelemetry("");
     ackNum = SmartDashboard.getNumber("SysIdAckNumber", 0); // Input
