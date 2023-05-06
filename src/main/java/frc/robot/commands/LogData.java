@@ -33,7 +33,7 @@ public class LogData extends CommandBase {
     public void execute() {
         boolean drive = Robot.getDrive();
         ModuleType module = Robot.getModuleType();
-        if(drive && drivetrain.getTurnLock()) startTime = Timer.getFPGATimestamp();
+        if(drive && !drivetrain.getTurnLock()) startTime = Timer.getFPGATimestamp();
         else data.add(new double[] {Timer.getFPGATimestamp(), drivetrain.getMotorVoltage(module, drive), drivetrain.getEncoderPosition(module, drive), drivetrain.getEncoderVelocity(module, drive)});
         double voltage = Robot.getVoltageCommand();
         if(Robot.getTestType() == TestType.QUASISTATIC) voltage *= Timer.getFPGATimestamp() - startTime;
