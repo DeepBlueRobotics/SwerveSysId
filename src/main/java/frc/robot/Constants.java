@@ -18,27 +18,27 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
-    public static final int driveFrontLeftPort = 10;
-    public static final int driveFrontRightPort = 2;
-    public static final int driveBackLeftPort = 11;
-    public static final int driveBackRightPort = 17;
+    public static final int driveFrontLeftPort = 9;
+    public static final int driveFrontRightPort = 7;
+    public static final int driveBackLeftPort = 4;
+    public static final int driveBackRightPort = 2;
 
-    public static final int turnFrontLeftPort = 9;
-    public static final int turnFrontRightPort = 1;
-    public static final int turnBackLeftPort = 12;
-    public static final int turnBackRightPort = 18;
+    public static final int turnFrontLeftPort = 1;
+    public static final int turnFrontRightPort = 11;
+    public static final int turnBackLeftPort = 3;
+    public static final int turnBackRightPort = 5;
 
-    public static final boolean[] driveInversion = {false, false, false, false};
+    public static final boolean[] driveInversion = {true, true, true, true};
     public static final boolean[] turnInversion = {true, true, true, true};
 
-    public static final int flEncoderPort = 1;
-    public static final int frEncoderPort = 2;
-    public static final int blEncoderPort = 3;
-    public static final int brEncoderPort = 4;
+    public static final int flEncoderPort = 4;
+    public static final int frEncoderPort = 3;
+    public static final int blEncoderPort = 1;
+    public static final int brEncoderPort = 2;
 
-    public static final double[] turnZero = {-72.861, 47.549, -178.505, 66.885};
+    public static final double[] turnZero = {141.24, -154.69, 173.144, -43.153};
 
-    public static final double driveGearing = 6.75;
+    public static final double driveGearing = 6.86;
     public static final double turnGearing = 1;
     public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65;
 
