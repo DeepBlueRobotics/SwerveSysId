@@ -74,7 +74,7 @@ public class Drivetrain extends SubsystemBase {
         for(CANCoder encoder : encoders) encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
         for(PIDController controller : turnControllers) {
-            controller.setTolerance(Constants.turnTolerance);
+            controller.setTolerance(Constants.turnToleranceDeg);
             controller.enableContinuousInput(-180, 180);
         }
     }
@@ -88,9 +88,9 @@ public class Drivetrain extends SubsystemBase {
     public void driveRobot(double voltage, double direction) {
         boolean turnReady = true;
         for(int i = 0; i < turnMotors.length; i++) {
-            double target = direction + Constants.turnZero[i];
+            double target = direction + Constants.turnZeroDeg[i];
             double turnVoltage = turnControllers[i].calculate(encoders[i].getAbsolutePosition(), target);
-            if(target > Constants.turnTolerance) turnReady = false;
+            if(!turnControllers[i].atSetpoint()) turnReady = false;
             turnMotors[i].setVoltage(turnVoltage);
         }
         turnLock |= turnReady;

@@ -33,13 +33,13 @@ public final class Constants {
     public static final int blEncoderPort = 3;
     public static final int brEncoderPort = 4;
 
-    public static final double[] turnZero = {0, 0, 0, 0};
+    public static final double[] turnZeroDeg = {0, 0, 0, 0};
 
     public static final double driveGearing = 1;
     public static final double turnGearing = 1;
     public static final double wheelDiameterMeters = Units.inchesToMeters(4);
 
     public static final double turnKp = 0.07;
-    public static final double turnTolerance = 3 / 4096;
+    public static final double turnToleranceDeg = 1;
 
 }
